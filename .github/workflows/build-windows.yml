@@ -1,4 +1,4 @@
-name: Build Windows App
+name: Build LATEST Windows App
 
 on:
   workflow_dispatch:
@@ -11,14 +11,34 @@ permissions:
 
 jobs:
   build:
-    name: Build Windows x64
     runs-on: windows-latest
 
     steps:
-      - name: Checkout project
+      - name: Checkout latest MAIN
         uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
 
-      - name: Setup Python 3.12
+      - name: Force latest origin/main
+        shell: pwsh
+        run: |
+          git fetch origin main
+          git reset --hard origin/main
+
+          Write-Host "================================="
+          Write-Host "BUILDING THIS COMMIT:"
+          git log -1 --oneline
+          Write-Host "================================="
+
+      - name: Get commit version
+        id: version
+        shell: pwsh
+        run: |
+          $sha = git rev-parse --short HEAD
+          "sha=$sha" >> $env:GITHUB_OUTPUT
+
+      - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -30,32 +50,69 @@ jobs:
           python -m pip install -r requirements.txt
           python -m pip install pyinstaller pillow
 
-      - name: Check Python code
+      - name: Verify latest sales report exists
         shell: pwsh
         run: |
-          python -m py_compile `
-            backend/api.py `
-            backend/launcher.py `
-            backend/report.py `
-            backend/orders_report.py `
-            backend/barcode_report.py `
-            backend/sep_report.py `
-            backend/price_report.py `
-            backend/definition_date_report.py `
-            backend/custom_report.py `
-            backend/smart_charge_report.py `
-            backend/sleep_analysis_report.py `
-            backend/sales_percentage_report.py
+          if (!(Test-Path "backend/sales_percentage_report.py")) {
+            throw "sales_percentage_report.py NOT FOUND"
+          }
 
-      - name: Build RoyalReportTools
+          Select-String `
+            -Path "backend/api.py" `
+            -Pattern "upload-sales-percentage"
+
+          Select-String `
+            -Path "backend/sales_percentage_report.py" `
+            -Pattern "Peyda"
+
+          Write-Host "LATEST SALES REPORT VERIFIED"
+
+      - name: Remove old builds
         shell: pwsh
         run: |
-          python -m PyInstaller --clean --noconfirm RoyalReportTools.spec
+          if (Test-Path "build") {
+            Remove-Item "build" -Recurse -Force
+          }
 
-      - name: Upload Windows App
+          if (Test-Path "dist") {
+            Remove-Item "dist" -Recurse -Force
+          }
+
+      - name: Build fresh EXE
+        shell: pwsh
+        run: |
+          python -m PyInstaller `
+            --clean `
+            --noconfirm `
+            RoyalReportTools.spec
+
+      - name: Add build information
+        shell: pwsh
+        run: |
+          $sha = "${{ steps.version.outputs.sha }}"
+
+          @"
+          RoyalReportTools
+          Commit: $sha
+          Built: $(Get-Date -Format "yyyy-MM-dd HH:mm:ss")
+          "@ | Out-File `
+            "dist/RoyalReportTools/BUILD_INFO.txt" `
+            -Encoding utf8
+
+      - name: Create ZIP
+        shell: pwsh
+        run: |
+          $sha = "${{ steps.version.outputs.sha }}"
+
+          Compress-Archive `
+            -Path "dist/RoyalReportTools/*" `
+            -DestinationPath "RoyalReportTools-$sha.zip" `
+            -Force
+
+      - name: Upload LATEST build
         uses: actions/upload-artifact@v4
         with:
-          name: RoyalReportTools-Windows-x64
-          path: dist/RoyalReportTools/
+          name: RoyalReportTools-LATEST-${{ steps.version.outputs.sha }}
+          path: RoyalReportTools-${{ steps.version.outputs.sha }}.zip
           if-no-files-found: error
           retention-days: 30
