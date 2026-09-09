@@ -1,0 +1,110 @@
+@import url("/static/startup-success.css?v=1");
+@import url("/static/tool-preview.css?v=1");
+@import url("/static/upload-chamber.css?v=1");
+@import url("/static/custom-builder.css?v=1");
+
+/* عرض هماهنگ هدر، کارت‌ها و نوار آخرین فعالیت‌ها */
+
+.page-container,
+.activity-dock {
+    width: min(1344px, calc(100% - 32px));
+}
+
+
+/* دسکتاپ: سه کارت در هر ردیف */
+
+.tools-grid {
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+}
+
+
+/* لوگوی متحرک پس‌زمینه؛ واضح‌تر بدون تغییر لوگوی اصلی هدر */
+
+.royal-hologram,
+html[data-theme="dark"] .royal-hologram {
+    opacity: 0.14;
+    mix-blend-mode: screen;
+    filter:
+        saturate(1.4)
+        contrast(1.12);
+}
+
+.royal-hologram img,
+html[data-theme="dark"] .royal-hologram img {
+    filter:
+        brightness(1.32)
+        saturate(1.48)
+        contrast(1.08)
+        drop-shadow(0 0 22px rgba(71, 190, 255, 0.78))
+        drop-shadow(0 0 48px rgba(44, 112, 205, 0.38));
+}
+
+.royal-hologram::before,
+html[data-theme="dark"] .royal-hologram::before {
+    border-color: rgba(81, 198, 255, 0.4);
+    box-shadow:
+        0 0 70px rgba(56, 170, 232, 0.24),
+        inset 0 0 70px rgba(65, 153, 231, 0.12);
+}
+
+.royal-hologram::after,
+html[data-theme="dark"] .royal-hologram::after {
+    display: none;
+}
+
+html[data-theme="light"] .royal-hologram {
+    opacity: 0.1;
+    mix-blend-mode: multiply;
+    filter:
+        saturate(1.55)
+        contrast(1.18);
+}
+
+html[data-theme="light"] .royal-hologram img {
+    filter:
+        brightness(0.92)
+        saturate(1.75)
+        contrast(1.24)
+        drop-shadow(0 0 21px rgba(35, 125, 204, 0.42))
+        drop-shadow(0 0 42px rgba(64, 165, 224, 0.2));
+}
+
+html[data-theme="light"] .royal-hologram::before {
+    border-color: rgba(37, 126, 194, 0.34);
+    box-shadow:
+        0 0 65px rgba(46, 143, 205, 0.2),
+        inset 0 0 65px rgba(65, 157, 218, 0.12);
+}
+
+html[data-theme="light"] .royal-hologram::after {
+    display: none;
+}
+
+
+/* تبلت و نمایشگرهای متوسط: دو کارت در هر ردیف */
+
+@media (min-width: 761px) and (max-width: 1040px) {
+    .tools-grid {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+}
+
+
+/* موبایل: یک کارت در هر ردیف */
+
+@media (max-width: 760px) {
+    .tools-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .royal-hologram,
+    html[data-theme="dark"] .royal-hologram {
+        opacity: 0.1;
+    }
+
+    html[data-theme="light"] .royal-hologram {
+        opacity: 0.075;
+    }
+}

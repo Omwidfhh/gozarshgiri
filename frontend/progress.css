@@ -1,0 +1,215 @@
+/* نوار پیشرفت داخل دکمه ساخت گزارش */
+
+.start-button {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+}
+
+.start-button-content {
+    position: relative;
+    z-index: 2;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+
+    width: 100%;
+}
+
+.button-progress-fill {
+    position: absolute;
+    z-index: 1;
+    top: 0;
+    right: 0;
+    bottom: 0;
+
+    width: 0;
+    overflow: hidden;
+    pointer-events: none;
+
+    background:
+        linear-gradient(
+            90deg,
+            rgba(21, 91, 139, 0.9),
+            rgba(44, 135, 193, 0.88)
+        );
+
+    box-shadow:
+        -5px 0 20px
+        rgba(20, 104, 161, 0.28);
+
+    transition:
+        width 380ms
+        cubic-bezier(0.22, 1, 0.36, 1),
+        background 220ms ease;
+}
+
+.button-progress-fill::after {
+    position: absolute;
+    inset: 0;
+
+    content: "";
+
+    background:
+        linear-gradient(
+            105deg,
+            transparent 20%,
+            rgba(255, 255, 255, 0.32) 48%,
+            transparent 76%
+        );
+
+    translate: 110% 0;
+
+    animation:
+        buttonProgressShimmer
+        1.35s ease-in-out infinite;
+}
+
+@keyframes buttonProgressShimmer {
+    to {
+        translate: -110% 0;
+    }
+}
+
+.button-progress-percent {
+    display: none;
+
+    min-width: 42px;
+    padding: 3px 7px;
+
+    border:
+        1px solid
+        rgba(255, 255, 255, 0.3);
+
+    border-radius: 8px;
+
+    color: #ffffff;
+    font-family: Tahoma, Arial, sans-serif;
+    font-size: 11px;
+    font-weight: 800;
+    line-height: 1.4;
+
+    background:
+        rgba(4, 42, 70, 0.2);
+}
+
+.start-button.is-loading .button-progress-percent,
+.start-button.is-complete .button-progress-percent,
+.start-button.is-error .button-progress-percent {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.start-button.is-loading {
+    opacity: 1;
+}
+
+.start-button.is-loading[data-stage="processing"] .button-loader {
+    animation-duration: 560ms;
+}
+
+.start-button.is-loading[data-stage="download"] .button-loader {
+    border-top-color: #bdf3dd;
+}
+
+.start-button.is-complete {
+    cursor: pointer;
+
+    background:
+        linear-gradient(
+            135deg,
+            #339879,
+            #25755e
+        );
+
+    box-shadow:
+        0 17px 34px
+        rgba(38, 133, 103, 0.28);
+}
+
+.start-button.is-complete .button-progress-fill {
+    background:
+        linear-gradient(
+            90deg,
+            #287b62,
+            #56bc96
+        );
+}
+
+.start-button.is-error {
+    cursor: pointer;
+
+    background:
+        linear-gradient(
+            135deg,
+            #bd5962,
+            #98434b
+        );
+
+    box-shadow:
+        0 17px 34px
+        rgba(164, 60, 69, 0.25);
+}
+
+.start-button.is-error .button-progress-fill {
+    background:
+        linear-gradient(
+            90deg,
+            #8f3740,
+            #cf6b74
+        );
+}
+
+html[data-theme="dark"] .button-progress-fill {
+    background:
+        linear-gradient(
+            90deg,
+            rgba(29, 94, 137, 0.96),
+            rgba(48, 133, 187, 0.94)
+        );
+
+    box-shadow:
+        -5px 0 22px
+        rgba(63, 158, 219, 0.22);
+}
+
+html[data-theme="dark"] .button-progress-percent {
+    border-color:
+        rgba(215, 239, 253, 0.22);
+
+    background:
+        rgba(4, 21, 33, 0.28);
+}
+
+html[data-theme="dark"] .start-button.is-complete {
+    background:
+        linear-gradient(
+            135deg,
+            #2d846a,
+            #1d5e4a
+        );
+}
+
+html[data-theme="dark"] .start-button.is-error {
+    background:
+        linear-gradient(
+            135deg,
+            #a84d56,
+            #743039
+        );
+}
+
+@media (max-width: 470px) {
+    .start-button-content {
+        gap: 7px;
+    }
+
+    .button-progress-percent {
+        min-width: 38px;
+        padding: 3px 5px;
+        font-size: 10px;
+    }
+}

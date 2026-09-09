@@ -1,0 +1,743 @@
+/* =========================================================
+   Royal Jeans — Startup Splash
+   ========================================================= */
+
+.app-splash {
+    position: fixed;
+    z-index: 9999;
+    inset: 0;
+
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+
+    color: #f4f8fb;
+    background:
+        radial-gradient(
+            circle at 50% 44%,
+            rgba(31, 107, 162, 0.28),
+            transparent 34%
+        ),
+        radial-gradient(
+            circle at 20% 16%,
+            rgba(217, 173, 85, 0.09),
+            transparent 28%
+        ),
+        linear-gradient(
+            145deg,
+            #061522,
+            #020a12 72%
+        );
+
+    opacity: 1;
+    visibility: visible;
+
+    transition:
+        opacity 520ms ease,
+        visibility 0s linear 0s;
+}
+
+.app-splash::before,
+.app-splash::after {
+    position: absolute;
+    content: "";
+    pointer-events: none;
+}
+
+.app-splash::before {
+    inset: 0;
+
+    background-image:
+        repeating-linear-gradient(
+            96deg,
+            transparent 0 3px,
+            rgba(255, 255, 255, 0.016) 3px 4px
+        ),
+        repeating-linear-gradient(
+            4deg,
+            transparent 0 5px,
+            rgba(0, 0, 0, 0.08) 5px 6px
+        );
+
+    opacity: 0.75;
+}
+
+.app-splash::after {
+    right: 7%;
+    bottom: 9%;
+    left: 7%;
+
+    height: 1px;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            rgba(217, 173, 85, 0.48),
+            transparent
+        );
+
+    box-shadow:
+        0 7px 0 rgba(217, 173, 85, 0.07);
+}
+
+.app-splash.is-leaving {
+    opacity: 0;
+    visibility: hidden;
+
+    transition:
+        opacity 620ms cubic-bezier(0.4, 0, 0.2, 1),
+        visibility 0s linear 620ms;
+}
+
+.app-splash-texture {
+    position: absolute;
+    inset: -20%;
+    pointer-events: none;
+
+    background:
+        conic-gradient(
+            from 210deg at 50% 50%,
+            transparent,
+            rgba(61, 142, 197, 0.055),
+            transparent 38%
+        );
+
+    animation:
+        splashAmbient 8s linear infinite;
+}
+
+.app-splash-content {
+    position: relative;
+    z-index: 2;
+
+    display: flex;
+    width: min(440px, calc(100% - 42px));
+    align-items: center;
+    flex-direction: column;
+
+    text-align: center;
+}
+
+.app-splash-logo-stage {
+    position: relative;
+
+    display: grid;
+    width: 210px;
+    height: 210px;
+    place-items: center;
+
+    perspective: 900px;
+}
+
+.app-splash-logo {
+    position: relative;
+    z-index: 4;
+
+    display: block;
+    width: 150px;
+    height: 150px;
+    object-fit: contain;
+
+    filter:
+        drop-shadow(0 22px 35px rgba(0, 0, 0, 0.36));
+
+    animation:
+        splashLogoEnter 1.15s cubic-bezier(0.16, 1, 0.3, 1) both,
+        splashLogoBreathe 2.8s ease-in-out 1.15s infinite;
+}
+
+.app-splash-glow {
+    position: absolute;
+    z-index: 1;
+    inset: 38px;
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(52, 142, 209, 0.28),
+            rgba(52, 142, 209, 0.06) 46%,
+            transparent 72%
+        );
+
+    filter: blur(10px);
+    animation: splashGlow 2.2s ease-in-out infinite;
+}
+
+.app-splash-ring {
+    position: absolute;
+    z-index: 2;
+
+    border: 1px solid rgba(217, 173, 85, 0.35);
+    border-radius: 50%;
+
+    box-shadow:
+        0 0 26px rgba(217, 173, 85, 0.06);
+}
+
+.app-splash-ring::after {
+    position: absolute;
+    top: 50%;
+    left: -3px;
+
+    width: 6px;
+    height: 6px;
+
+    content: "";
+    border-radius: 50%;
+    background: #e4bc6b;
+    box-shadow:
+        0 0 14px rgba(228, 188, 107, 0.75);
+}
+
+.app-splash-ring.ring-one {
+    inset: 13px;
+    transform: rotateX(68deg);
+    animation: splashRing 4.5s linear infinite;
+}
+
+.app-splash-ring.ring-two {
+    inset: 31px;
+    border-color: rgba(86, 168, 222, 0.33);
+    transform: rotateY(66deg);
+    animation: splashRingReverse 3.8s linear infinite;
+}
+
+.app-splash-ring.ring-two::after {
+    right: -3px;
+    left: auto;
+    background: #64b8ed;
+    box-shadow:
+        0 0 14px rgba(100, 184, 237, 0.75);
+}
+
+.app-splash-copy {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    gap: 7px;
+    margin-top: 2px;
+
+    animation:
+        splashCopyEnter 700ms ease 380ms both;
+}
+
+.app-splash-eyebrow {
+    color: #dfb967;
+    font-family: Arial, sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 4px;
+}
+
+.app-splash-copy strong {
+    color: #f4f8fb;
+    font-size: clamp(24px, 5vw, 34px);
+    font-weight: 800;
+}
+
+.app-splash-copy small {
+    min-height: 22px;
+    color: #91a9ba;
+    font-size: 12px;
+
+    transition:
+        opacity 180ms ease;
+}
+
+.app-splash-progress {
+    position: relative;
+
+    width: min(270px, 78%);
+    height: 4px;
+    margin-top: 22px;
+    overflow: hidden;
+
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.07);
+
+    box-shadow:
+        inset 0 1px 2px rgba(0, 0, 0, 0.38);
+
+    animation:
+        splashCopyEnter 700ms ease 520ms both;
+}
+
+.app-splash-progress span {
+    display: block;
+    width: 8%;
+    height: 100%;
+
+    border-radius: inherit;
+    background:
+        linear-gradient(
+            90deg,
+            #226a9b,
+            #61b7ec 52%,
+            #e1b962
+        );
+
+    box-shadow:
+        0 0 18px rgba(82, 174, 232, 0.52);
+
+    transition:
+        width 520ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.app-splash.is-ready .app-splash-logo-stage {
+    animation:
+        splashReady 620ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* =========================================================
+   Royal Jeans — Professional Success Effect
+   ========================================================= */
+
+.tool-card.professional-success {
+    overflow: hidden;
+    border-color: rgba(101, 238, 172, 0.88) !important;
+
+    filter:
+        brightness(1.12)
+        saturate(1.12);
+
+    box-shadow:
+        inset 0 0 0 1px rgba(196, 255, 226, 0.16),
+        0 0 0 1px rgba(94, 226, 162, 0.28),
+        0 0 48px rgba(61, 216, 146, 0.34),
+        0 25px 58px rgba(0, 0, 0, 0.38) !important;
+
+    animation:
+        professionalCardSuccess 2.8s ease both;
+}
+
+.tool-card.professional-success .card-success-burst {
+    display: none;
+}
+
+.tool-card.professional-success .tool-icon {
+    z-index: 11;
+
+    border-color: rgba(179, 255, 218, 0.7) !important;
+    color: #dcffed !important;
+    background:
+        linear-gradient(
+            145deg,
+            rgba(53, 201, 133, 0.96),
+            rgba(15, 116, 75, 0.96)
+        ) !important;
+
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.22),
+        0 0 0 8px rgba(81, 224, 154, 0.08),
+        0 0 32px rgba(70, 226, 153, 0.48) !important;
+
+    animation:
+        professionalIconSuccess 2.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.professional-success-check {
+    width: 31px;
+    height: 31px;
+
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+
+    filter:
+        drop-shadow(0 0 6px rgba(218, 255, 237, 0.52));
+}
+
+.professional-success-check path {
+    stroke-dasharray: 30;
+    stroke-dashoffset: 30;
+    animation:
+        professionalCheckDraw 520ms ease 180ms forwards;
+}
+
+.professional-success-wave {
+    position: absolute;
+    z-index: 6;
+    top: 50%;
+    right: 50%;
+
+    width: 64px;
+    height: 64px;
+    pointer-events: none;
+
+    border: 1px solid rgba(135, 255, 196, 0.75);
+    border-radius: 50%;
+
+    opacity: 0;
+    transform: translate(50%, -50%) scale(0.2);
+}
+
+.professional-success-wave.wave-one {
+    animation:
+        professionalSuccessWave 1.5s ease-out 120ms both;
+}
+
+.professional-success-wave.wave-two {
+    animation:
+        professionalSuccessWave 1.7s ease-out 520ms both;
+}
+
+.professional-success-sweep {
+    position: absolute;
+    z-index: 5;
+    top: -45%;
+    bottom: -45%;
+    left: -35%;
+
+    width: 23%;
+    pointer-events: none;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            rgba(179, 255, 219, 0.2),
+            transparent
+        );
+
+    filter: blur(4px);
+    transform: skewX(-18deg);
+    animation:
+        professionalSuccessSweep 1.45s ease 180ms both;
+}
+
+.professional-success-label {
+    position: absolute;
+    z-index: 12;
+    top: 12px;
+    left: 50%;
+
+    padding: 5px 11px;
+    pointer-events: none;
+
+    border: 1px solid rgba(164, 255, 210, 0.3);
+    border-radius: 999px;
+
+    color: #d9ffeb;
+    font-size: 10px;
+    font-weight: 750;
+    white-space: nowrap;
+
+    background: rgba(15, 116, 76, 0.78);
+    box-shadow:
+        0 8px 22px rgba(4, 59, 37, 0.3),
+        0 0 18px rgba(67, 221, 145, 0.16);
+
+    opacity: 0;
+    transform: translateX(-50%) translateY(-8px);
+    animation:
+        professionalSuccessLabel 2.45s ease 220ms both;
+}
+
+.professional-success-particles {
+    position: absolute;
+    z-index: 10;
+    top: 50%;
+    right: calc(25px + 29px);
+
+    width: 1px;
+    height: 1px;
+    pointer-events: none;
+}
+
+.professional-success-particles i {
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    width: 5px;
+    height: 5px;
+
+    border-radius: 50%;
+    background: #92f8c7;
+    box-shadow:
+        0 0 9px rgba(111, 240, 180, 0.82);
+
+    opacity: 0;
+    animation:
+        professionalParticle 900ms ease-out var(--delay) both;
+}
+
+.professional-success-particles i:nth-child(1) {
+    --particle-x: 42px;
+    --particle-y: -4px;
+    --delay: 100ms;
+}
+
+.professional-success-particles i:nth-child(2) {
+    --particle-x: 31px;
+    --particle-y: -31px;
+    --delay: 150ms;
+}
+
+.professional-success-particles i:nth-child(3) {
+    --particle-x: 4px;
+    --particle-y: -43px;
+    --delay: 200ms;
+}
+
+.professional-success-particles i:nth-child(4) {
+    --particle-x: -30px;
+    --particle-y: -31px;
+    --delay: 250ms;
+}
+
+.professional-success-particles i:nth-child(5) {
+    --particle-x: -43px;
+    --particle-y: 2px;
+    --delay: 300ms;
+}
+
+.professional-success-particles i:nth-child(6) {
+    --particle-x: -28px;
+    --particle-y: 33px;
+    --delay: 350ms;
+}
+
+.professional-success-particles i:nth-child(7) {
+    --particle-x: 5px;
+    --particle-y: 43px;
+    --delay: 400ms;
+}
+
+.professional-success-particles i:nth-child(8) {
+    --particle-x: 33px;
+    --particle-y: 28px;
+    --delay: 450ms;
+}
+
+@keyframes splashAmbient {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes splashLogoEnter {
+    from {
+        opacity: 0;
+        transform: translateY(14px) scale(0.72) rotateY(-24deg);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1) rotateY(0deg);
+    }
+}
+
+@keyframes splashLogoBreathe {
+    0%,
+    100% {
+        transform: translateY(0) scale(1);
+    }
+
+    50% {
+        transform: translateY(-4px) scale(1.025);
+    }
+}
+
+@keyframes splashGlow {
+    0%,
+    100% {
+        opacity: 0.55;
+        transform: scale(0.9);
+    }
+
+    50% {
+        opacity: 1;
+        transform: scale(1.12);
+    }
+}
+
+@keyframes splashRing {
+    to {
+        transform: rotate(360deg) rotateX(68deg);
+    }
+}
+
+@keyframes splashRingReverse {
+    to {
+        transform: rotate(-360deg) rotateY(66deg);
+    }
+}
+
+@keyframes splashCopyEnter {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes splashReady {
+    0% {
+        transform: scale(1);
+    }
+
+    45% {
+        transform: scale(1.06);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+@keyframes professionalCardSuccess {
+    0%,
+    100% {
+        filter: brightness(1) saturate(1);
+    }
+
+    18%,
+    72% {
+        filter: brightness(1.14) saturate(1.14);
+    }
+}
+
+@keyframes professionalIconSuccess {
+    0% {
+        opacity: 0.35;
+    }
+
+    18% {
+        opacity: 1;
+    }
+
+    78% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0.94;
+    }
+}
+
+@keyframes professionalCheckDraw {
+    to {
+        stroke-dashoffset: 0;
+    }
+}
+
+@keyframes professionalSuccessWave {
+    0% {
+        opacity: 0;
+        transform: translate(50%, -50%) scale(0.2);
+    }
+
+    18% {
+        opacity: 0.72;
+    }
+
+    100% {
+        opacity: 0;
+        transform: translate(50%, -50%) scale(7.5);
+    }
+}
+
+@keyframes professionalSuccessSweep {
+    from {
+        opacity: 0;
+        transform: translateX(0) skewX(-18deg);
+    }
+
+    25% {
+        opacity: 1;
+    }
+
+    to {
+        opacity: 0;
+        transform: translateX(700%) skewX(-18deg);
+    }
+}
+
+@keyframes professionalSuccessLabel {
+    0% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-8px);
+    }
+
+    18%,
+    72% {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-5px);
+    }
+}
+
+@keyframes professionalParticle {
+    0% {
+        opacity: 0;
+        transform: translate(0, 0) scale(0.4);
+    }
+
+    20% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+        transform:
+            translate(
+                var(--particle-x),
+                var(--particle-y)
+            )
+            scale(0.1);
+    }
+}
+
+@media (max-width: 760px) {
+    .app-splash-logo-stage {
+        width: 180px;
+        height: 180px;
+    }
+
+    .app-splash-logo {
+        width: 128px;
+        height: 128px;
+    }
+
+    .professional-success-particles {
+        right: calc(17px + 26px);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .app-splash-texture,
+    .app-splash-logo,
+    .app-splash-glow,
+    .app-splash-ring,
+    .app-splash-copy,
+    .app-splash-progress,
+    .app-splash.is-ready .app-splash-logo-stage,
+    .tool-card.professional-success,
+    .tool-card.professional-success .tool-icon,
+    .professional-success-check path,
+    .professional-success-wave,
+    .professional-success-sweep,
+    .professional-success-label,
+    .professional-success-particles i {
+        animation: none !important;
+    }
+
+    .app-splash,
+    .app-splash.is-leaving {
+        transition-duration: 120ms !important;
+    }
+}
