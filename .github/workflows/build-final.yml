@@ -1,0 +1,91 @@
+name: BUILD FINAL CURRENT VERSION
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout current version
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        shell: pwsh
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt
+          python -m pip install pyinstaller
+
+      - name: Clean old builds
+        shell: pwsh
+        run: |
+          if (Test-Path "build") {
+            Remove-Item "build" -Recurse -Force
+          }
+
+          if (Test-Path "dist") {
+            Remove-Item "dist" -Recurse -Force
+          }
+
+          Get-ChildItem -Path . -Recurse -Directory -Filter "__pycache__" |
+            Remove-Item -Recurse -Force -ErrorAction SilentlyContinue
+
+      - name: Show version
+        shell: pwsh
+        run: |
+          git log -1 --oneline
+          Write-Host "Building current repository version..."
+
+      - name: Build application
+        shell: pwsh
+        run: |
+          python -m PyInstaller --clean --noconfirm RoyalReportTools.spec
+
+      - name: Verify EXE
+        shell: pwsh
+        run: |
+          if (!(Test-Path "dist/RoyalReportTools/RoyalReportTools.exe")) {
+            throw "RoyalReportTools.exe ساخته نشد"
+          }
+
+          Write-Host "RoyalReportTools.exe successfully created"
+
+      - name: Add build info
+        shell: pwsh
+        run: |
+          $sha = git rev-parse --short HEAD
+
+          @"
+          RoyalReportTools
+          Version: $sha
+          GitHub Run: ${{ github.run_number }}
+          "@ | Set-Content "dist/RoyalReportTools/BUILD_INFO.txt"
+
+      - name: Create final ZIP
+        shell: pwsh
+        run: |
+          Compress-Archive `
+            -Path "dist/RoyalReportTools/*" `
+            -DestinationPath "RoyalReportTools-FINAL.zip" `
+            -Force
+
+      - name: Upload final application
+        uses: actions/upload-artifact@v4
+        with:
+          name: RoyalReportTools-FINAL-${{ github.run_number }}
+          path: RoyalReportTools-FINAL.zip
+          if-no-files-found: error
+          retention-days: 30
