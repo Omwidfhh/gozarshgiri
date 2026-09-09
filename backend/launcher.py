@@ -229,7 +229,7 @@ def main():
     browser_process = None
     profile_directory = (
         get_app_data_directory()
-        / "BrowserProfile"
+        / f"BrowserProfile-{os.getpid()}-{int(time.time())}"
     )
     profile_directory.mkdir(
         parents=True,

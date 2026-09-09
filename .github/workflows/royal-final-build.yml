@@ -1,0 +1,135 @@
+name: ROYAL FINAL BUILD
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build Current RoyalReportTools
+    runs-on: windows-latest
+
+    steps:
+
+      - name: Checkout exact current commit
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Show exact source version
+        shell: pwsh
+        run: |
+          Write-Host "======================================"
+          Write-Host "BUILDING EXACT COMMIT:"
+          git log -1 --oneline
+          Write-Host "======================================"
+
+      - name: Verify latest sales percentage code
+        shell: pwsh
+        run: |
+          if (!(Test-Path "backend/sales_percentage_report.py")) {
+            throw "sales_percentage_report.py not found"
+          }
+
+          $sales = Get-Content "backend/sales_percentage_report.py" -Raw -Encoding UTF8
+          $html  = Get-Content "frontend/index.html" -Raw -Encoding UTF8
+
+          if ($sales -notmatch "Peyda") {
+            throw "Latest Peyda Excel styling is NOT in this source!"
+          }
+
+          if ($sales -notmatch "موجودی اولیه") {
+            throw "Latest موجودی اولیه calculation is NOT in this source!"
+          }
+
+          if ($html -notmatch "درصد فروش محصولات") {
+            throw "Latest sales percentage button is NOT in this source!"
+          }
+
+          Write-Host "LATEST VERSION VERIFIED"
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        shell: pwsh
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt
+          python -m pip install pyinstaller
+
+      - name: Delete every old build/cache
+        shell: pwsh
+        run: |
+          if (Test-Path "build") {
+            Remove-Item "build" -Recurse -Force
+          }
+
+          if (Test-Path "dist") {
+            Remove-Item "dist" -Recurse -Force
+          }
+
+          Get-ChildItem -Path . -Recurse -Directory -Filter "__pycache__" |
+            Remove-Item -Recurse -Force -ErrorAction SilentlyContinue
+
+          Get-ChildItem -Path . -Recurse -Filter "*.pyc" |
+            Remove-Item -Force -ErrorAction SilentlyContinue
+
+      - name: Build completely fresh app
+        shell: pwsh
+        run: |
+          python -m PyInstaller --clean --noconfirm RoyalReportTools.spec
+
+          if (!(Test-Path "dist/RoyalReportTools/RoyalReportTools.exe")) {
+            throw "RoyalReportTools.exe was not created"
+          }
+
+      - name: Create build information
+        shell: pwsh
+        run: |
+          $sha = git rev-parse --short HEAD
+
+          @"
+          RoyalReportTools FINAL
+          Commit: $sha
+          GitHub Run: ${{ github.run_number }}
+          Build Date: $(Get-Date -Format "yyyy-MM-dd HH:mm:ss")
+
+          This build contains:
+          - Sales Percentage Report
+          - Initial Inventory calculation
+          - Peyda Excel output
+          - Final current frontend
+          "@ | Set-Content `
+            "dist/RoyalReportTools/BUILD_INFO.txt" `
+            -Encoding UTF8
+
+          Get-FileHash `
+            "dist/RoyalReportTools/RoyalReportTools.exe" `
+            -Algorithm SHA256
+
+      - name: Create FINAL ZIP
+        shell: pwsh
+        run: |
+          $sha = git rev-parse --short HEAD
+
+          Compress-Archive `
+            -Path "dist/RoyalReportTools/*" `
+            -DestinationPath "RoyalReportTools-FINAL-$sha.zip" `
+            -Force
+
+      - name: Upload FINAL app
+        uses: actions/upload-artifact@v4
+        with:
+          name: RoyalReportTools-FINAL
+          path: RoyalReportTools-FINAL-*.zip
+          if-no-files-found: error
+          retention-days: 30
+          compression-level: 0
