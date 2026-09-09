@@ -1,0 +1,61 @@
+name: Build Windows App
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build Windows x64
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout project
+        uses: actions/checkout@v4
+
+      - name: Setup Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        shell: pwsh
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt
+          python -m pip install pyinstaller pillow
+
+      - name: Check Python code
+        shell: pwsh
+        run: |
+          python -m py_compile `
+            backend/api.py `
+            backend/launcher.py `
+            backend/report.py `
+            backend/orders_report.py `
+            backend/barcode_report.py `
+            backend/sep_report.py `
+            backend/price_report.py `
+            backend/definition_date_report.py `
+            backend/custom_report.py `
+            backend/smart_charge_report.py `
+            backend/sleep_analysis_report.py `
+            backend/sales_percentage_report.py
+
+      - name: Build RoyalReportTools
+        shell: pwsh
+        run: |
+          python -m PyInstaller --clean --noconfirm RoyalReportTools.spec
+
+      - name: Upload Windows App
+        uses: actions/upload-artifact@v4
+        with:
+          name: RoyalReportTools-Windows-x64
+          path: dist/RoyalReportTools/
+          if-no-files-found: error
+          retention-days: 30
