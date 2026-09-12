@@ -1,0 +1,149 @@
+name: BUILD ELFO V3 CURRENT
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout exact version
+        uses: actions/checkout@v4
+
+      - name: Verify V3 source
+        shell: pwsh
+        run: |
+          $required = @(
+            "frontend/elfo-intro-v3.css",
+            "frontend/elfo-intro-v3.js",
+            "frontend/elfo-walk-v3.png",
+            "frontend/elfo-puller-v3.png",
+            "frontend/denim-zip-v3.png"
+          )
+
+          foreach ($file in $required) {
+            if (!(Test-Path $file)) {
+              throw "MISSING V3 FILE: $file"
+            }
+          }
+
+          if ((Get-Content frontend/index.html -Raw) -notmatch "elfoIntroV3") {
+            throw "index.html is NOT using Elfo V3"
+          }
+
+          Write-Host "======================================"
+          Write-Host "ELFO V3 SOURCE VERIFIED"
+          git log -1 --oneline
+          Write-Host "======================================"
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        shell: pwsh
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt
+          python -m pip install pyinstaller pillow
+
+      - name: Clean previous build
+        shell: pwsh
+        run: |
+          if (Test-Path build) {
+            Remove-Item build -Recurse -Force
+          }
+
+          if (Test-Path dist) {
+            Remove-Item dist -Recurse -Force
+          }
+
+      - name: Build fresh app
+        shell: pwsh
+        run: |
+          python -m PyInstaller --clean --noconfirm RoyalReportTools.spec
+
+          if (!(Test-Path "dist/RoyalReportTools/RoyalReportTools.exe")) {
+            throw "RoyalReportTools.exe was not created"
+          }
+
+      - name: Verify V3 is inside output
+        shell: pwsh
+        run: |
+          $v3js = Get-ChildItem `
+            "dist/RoyalReportTools" `
+            -Recurse `
+            -Filter "elfo-intro-v3.js" `
+            -ErrorAction SilentlyContinue
+
+          $walk = Get-ChildItem `
+            "dist/RoyalReportTools" `
+            -Recurse `
+            -Filter "elfo-walk-v3.png" `
+            -ErrorAction SilentlyContinue
+
+          $denim = Get-ChildItem `
+            "dist/RoyalReportTools" `
+            -Recurse `
+            -Filter "denim-zip-v3.png" `
+            -ErrorAction SilentlyContinue
+
+          if (!$v3js) {
+            throw "V3 JS is NOT inside final build"
+          }
+
+          if (!$walk) {
+            throw "V3 walk animation is NOT inside final build"
+          }
+
+          if (!$denim) {
+            throw "V3 denim image is NOT inside final build"
+          }
+
+          Write-Host "ELFO V3 IS INSIDE FINAL OUTPUT"
+
+      - name: Add build info
+        shell: pwsh
+        run: |
+          $sha = git rev-parse --short HEAD
+
+          @"
+          ROYAL REPORT TOOLS
+          ELFO INTRO V3
+
+          Commit: $sha
+          GitHub Run: ${{ github.run_number }}
+
+          Included:
+          - Elfo V3 walking animation
+          - Correct walking direction
+          - Mouse tracking
+          - Jump interaction
+          - Denim zipper intro
+          - Current sales percentage report
+          "@ | Set-Content `
+            "dist/RoyalReportTools/BUILD_INFO.txt" `
+            -Encoding UTF8
+
+      - name: Get version
+        id: version
+        shell: pwsh
+        run: |
+          $sha = git rev-parse --short HEAD
+          "sha=$sha" >> $env:GITHUB_OUTPUT
+
+      - name: Upload FINAL V3
+        uses: actions/upload-artifact@v4
+        with:
+          name: RoyalReportTools-ELFO-V3-${{ steps.version.outputs.sha }}
+          path: dist/RoyalReportTools/
+          if-no-files-found: error
+          retention-days: 30
