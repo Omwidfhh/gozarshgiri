@@ -31,11 +31,6 @@ from sleep_analysis_report import create_sleep_analysis_report
 from smart_charge_report import create_smart_charge_report
 from sales_percentage_report import create_sales_percentage_report
 
-# HIDDEN_FAREWELL_IMPORT_START
-from farewell_secret import get_farewell_payload
-from farewell_secret import verify_farewell_code
-# HIDDEN_FAREWELL_IMPORT_END
-
 
 BASE_DIR = Path(__file__).resolve().parent
 
@@ -99,15 +94,6 @@ async def home():
 
     return FileResponse(index_file)
 
-
-# HIDDEN_FAREWELL_ROUTE_START
-@app.post("/farewell/unlock")
-async def unlock_hidden_farewell(code: str = Form(...)):
-    if not verify_farewell_code(code):
-        raise HTTPException(status_code=403, detail="Access denied")
-    payload = get_farewell_payload()
-    return {"ok": True, **payload}
-# HIDDEN_FAREWELL_ROUTE_END
 
 @app.get("/health")
 async def health():

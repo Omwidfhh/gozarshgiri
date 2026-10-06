@@ -1,0 +1,277 @@
+/* Royal Jeans hidden farewell — isolated Easter egg UI */
+#farewellUnlock,
+#farewellScene {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483600;
+  font-family: inherit;
+}
+#farewellUnlock[hidden],
+#farewellScene[hidden] { display: none !important; }
+
+#farewellUnlock {
+  display: grid;
+  place-items: center;
+  padding: 22px;
+  background: rgba(3, 9, 16, .64);
+  backdrop-filter: blur(14px) saturate(.9);
+  -webkit-backdrop-filter: blur(14px) saturate(.9);
+  animation: farewellBackdropIn .28s ease both;
+}
+.farewell-unlock-card {
+  width: min(430px, 92vw);
+  padding: 30px 28px 25px;
+  direction: rtl;
+  text-align: center;
+  border: 1px solid rgba(224, 197, 125, .22);
+  border-radius: 22px;
+  color: #f3f1e9;
+  background:
+    linear-gradient(145deg, rgba(20,37,53,.97), rgba(7,18,29,.98)),
+    #0b1825;
+  box-shadow: 0 32px 90px rgba(0,0,0,.48), inset 0 1px 0 rgba(255,255,255,.06);
+  animation: farewellCardIn .38s cubic-bezier(.2,.8,.2,1) both;
+}
+.farewell-unlock-mark {
+  width: 46px;
+  height: 2px;
+  margin: 0 auto 18px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, transparent, #d7b867, transparent);
+  box-shadow: 0 0 16px rgba(215,184,103,.35);
+}
+.farewell-unlock-title {
+  margin: 0 0 7px;
+  font-size: 20px;
+  font-weight: 850;
+  letter-spacing: -.02em;
+}
+.farewell-unlock-subtitle {
+  margin: 0 0 22px;
+  color: rgba(238,238,235,.62);
+  font-size: 12px;
+}
+.farewell-code-wrap {
+  display: flex;
+  gap: 9px;
+}
+#farewellCodeInput {
+  flex: 1;
+  min-width: 0;
+  height: 48px;
+  border: 1px solid rgba(255,255,255,.11);
+  border-radius: 13px;
+  outline: none;
+  color: #f7f7f4;
+  background: rgba(255,255,255,.055);
+  text-align: center;
+  font: 750 16px/1 system-ui, sans-serif;
+  letter-spacing: .12em;
+  transition: border-color .18s ease, box-shadow .18s ease, background .18s ease;
+}
+#farewellCodeInput:focus {
+  border-color: rgba(221,188,103,.56);
+  background: rgba(255,255,255,.075);
+  box-shadow: 0 0 0 3px rgba(221,188,103,.08);
+}
+#farewellUnlockButton {
+  height: 48px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: 13px;
+  color: #12202d;
+  background: linear-gradient(180deg, #ead292, #c8a956);
+  font: 850 13px/1 inherit;
+  cursor: pointer;
+  box-shadow: 0 8px 18px rgba(0,0,0,.20), inset 0 1px 0 rgba(255,255,255,.44);
+}
+#farewellUnlockButton:disabled { opacity: .55; cursor: default; }
+.farewell-error {
+  min-height: 19px;
+  margin: 12px 0 0;
+  color: #efa5a1;
+  font-size: 11px;
+  opacity: 0;
+  transition: opacity .18s ease;
+}
+.farewell-error.is-visible { opacity: 1; }
+.farewell-unlock-close {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  width: 38px;
+  height: 38px;
+  border: 1px solid rgba(255,255,255,.10);
+  border-radius: 50%;
+  color: rgba(255,255,255,.72);
+  background: rgba(5,12,20,.38);
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+#farewellScene {
+  overflow: hidden;
+  direction: rtl;
+  color: #f7f5ee;
+  background:
+    radial-gradient(ellipse at 50% 34%, rgba(208,176,93,.13), transparent 25%),
+    radial-gradient(ellipse at 50% 110%, rgba(0,0,0,.54), transparent 52%),
+    linear-gradient(180deg, #10263b 0%, #0b1d2f 45%, #07131f 100%);
+  animation: farewellSceneIn .65s ease both;
+}
+#farewellScene::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: .20;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(90deg, rgba(255,255,255,.025) 0 1px, transparent 1px 8px),
+    repeating-linear-gradient(0deg, rgba(255,255,255,.018) 0 1px, transparent 1px 11px),
+    linear-gradient(120deg, transparent 22%, rgba(255,255,255,.05) 42%, transparent 58%);
+  mix-blend-mode: soft-light;
+}
+#farewellScene::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  box-shadow: inset 0 0 190px rgba(0,0,0,.72), inset 0 -90px 120px rgba(0,0,0,.28);
+}
+.farewell-scene-inner {
+  position: relative;
+  z-index: 2;
+  width: min(820px, calc(100vw - 38px));
+  height: 100%;
+  margin: 0 auto;
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  text-align: center;
+  padding: 60px 0 70px;
+}
+.farewell-scene-kicker {
+  margin-bottom: 20px;
+  color: rgba(225,198,126,.78);
+  font: 800 10px/1.4 system-ui, sans-serif;
+  letter-spacing: .22em;
+  opacity: 0;
+  transform: translateY(12px);
+  animation: farewellLineIn .7s .25s ease forwards;
+}
+.farewell-scene-rule {
+  width: 0;
+  height: 1px;
+  margin-bottom: 28px;
+  background: linear-gradient(90deg, transparent, rgba(222,192,116,.76), transparent);
+  box-shadow: 0 0 17px rgba(222,192,116,.20);
+  animation: farewellRuleIn 1s .45s cubic-bezier(.2,.8,.2,1) forwards;
+}
+#farewellTitle {
+  margin: 0;
+  max-width: 760px;
+  font-size: clamp(28px, 4vw, 54px);
+  line-height: 1.35;
+  font-weight: 900;
+  letter-spacing: -.045em;
+  text-shadow: 0 10px 30px rgba(0,0,0,.24);
+  opacity: 0;
+  transform: translateY(18px);
+  animation: farewellLineIn .9s .65s cubic-bezier(.2,.8,.2,1) forwards;
+}
+#farewellMessage {
+  max-width: 720px;
+  margin: 28px 0 0;
+  white-space: pre-line;
+  color: rgba(245,245,240,.78);
+  font-size: clamp(14px, 1.5vw, 18px);
+  line-height: 2.15;
+  font-weight: 550;
+  opacity: 0;
+  transform: translateY(18px);
+  animation: farewellLineIn .95s 1.05s cubic-bezier(.2,.8,.2,1) forwards;
+}
+#farewellSignature {
+  margin-top: 34px;
+  color: #dec27a;
+  font-size: clamp(13px, 1.3vw, 16px);
+  font-weight: 850;
+  opacity: 0;
+  transform: translateY(12px);
+  animation: farewellLineIn .8s 1.55s ease forwards;
+}
+.farewell-scene-date {
+  margin-top: 10px;
+  color: rgba(255,255,255,.38);
+  font: 650 10px/1.4 system-ui, sans-serif;
+  letter-spacing: .08em;
+  opacity: 0;
+  animation: farewellFadeIn .8s 1.8s ease forwards;
+}
+.farewell-scene-close {
+  position: absolute;
+  z-index: 4;
+  top: 22px;
+  left: 22px;
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(255,255,255,.11);
+  border-radius: 50%;
+  color: rgba(255,255,255,.70);
+  background: rgba(7,16,26,.38);
+  backdrop-filter: blur(8px);
+  cursor: pointer;
+  font-size: 22px;
+  transition: transform .18s ease, background .18s ease;
+}
+.farewell-scene-close:hover { transform: scale(1.05); background: rgba(255,255,255,.08); }
+.farewell-stars {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  overflow: hidden;
+}
+.farewell-star {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  border-radius: 50%;
+  background: rgba(235,211,149,.62);
+  box-shadow: 0 0 7px rgba(235,211,149,.30);
+  animation: farewellFloat var(--dur) ease-in-out var(--delay) infinite alternate;
+}
+
+@keyframes farewellBackdropIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes farewellCardIn { from { opacity: 0; transform: translateY(14px) scale(.985); } to { opacity: 1; transform: none; } }
+@keyframes farewellSceneIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes farewellLineIn { to { opacity: 1; transform: none; } }
+@keyframes farewellFadeIn { to { opacity: 1; } }
+@keyframes farewellRuleIn { to { width: min(360px, 64vw); } }
+@keyframes farewellFloat { from { transform: translateY(-5px); opacity: .25; } to { transform: translateY(8px); opacity: .9; } }
+
+@media (max-width: 620px) {
+  .farewell-code-wrap { flex-direction: column; }
+  #farewellUnlockButton { width: 100%; }
+  .farewell-unlock-card { padding: 28px 20px 22px; }
+  .farewell-scene-inner { width: min(92vw, 720px); padding-top: 84px; }
+  #farewellMessage { line-height: 2; }
+}
+
+
+/* V2: denied toast */
+#farewellDeniedToast {
+  position: fixed; left: 50%; bottom: 34px; z-index: 2147483700;
+  min-width: 190px; max-width: calc(100vw - 36px); padding: 13px 22px;
+  direction: rtl; text-align: center; border: 1px solid rgba(235,118,112,.28);
+  border-radius: 14px; color: #ffe6e3; background: rgba(62,18,22,.94);
+  box-shadow: 0 18px 44px rgba(0,0,0,.34), inset 0 1px 0 rgba(255,255,255,.06);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  font: 800 13px/1.4 system-ui, sans-serif; opacity: 0;
+  transform: translate(-50%, 14px) scale(.98); pointer-events: none;
+  transition: opacity .22s ease, transform .22s ease;
+}
+#farewellDeniedToast.is-visible { opacity: 1; transform: translate(-50%, 0) scale(1); }
