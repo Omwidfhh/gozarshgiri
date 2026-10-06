@@ -1,4 +1,4 @@
-/* Royal Jeans — Elfo Denim Intro V11 UltraFluid */
+/* Royal Jeans — Elfo Denim Intro V10 (original assets, 15-step walk, 5-step jump) */
 html.elfo-intro-active,
 html.elfo-intro-active body { overflow: hidden !important; }
 
@@ -136,6 +136,7 @@ html.elfo-intro-active body { overflow: hidden !important; }
   outline-offset: 7px;
   border-radius: 16px;
 }
+
 .elfo-v3-shadow {
   position: absolute;
   z-index: 0;
@@ -172,8 +173,7 @@ html.elfo-intro-active body { overflow: hidden !important; }
   filter: drop-shadow(0 8px 8px rgba(0,0,0,.38));
   will-change: transform, filter;
 }
-.elfo-v3-sheet,
-.elfo-v11-sheet-b {
+.elfo-v3-sheet {
   position: absolute;
   top: 0;
   left: 0;
@@ -183,54 +183,27 @@ html.elfo-intro-active body { overflow: hidden !important; }
   object-fit: fill;
   transform: translate3d(0,0,0);
   transform-origin: 0 0;
-  will-change: transform, opacity;
+  will-change: transform;
   pointer-events: none;
   user-select: none;
   -webkit-user-drag: none;
-  image-rendering: auto;
 }
-.elfo-v11-sheet-b { opacity: 0; }
 .elfo-v3-character.is-moving .elfo-v3-frame-window { filter: drop-shadow(0 9px 9px rgba(0,0,0,.42)); }
 .elfo-v3-character.is-running .elfo-v3-frame-window { filter: drop-shadow(0 10px 11px rgba(0,0,0,.46)); }
 
-/* Original puller image remains the source art, but V11 slices it into moving layers. */
-.elfo-v3-puller { display: none !important; }
-.elfo-v11-puller-rig {
+.elfo-v3-puller {
   position: absolute;
   z-index: 36;
   width: clamp(150px, 15.4vw, 235px);
-  aspect-ratio: 1 / 1;
+  height: auto;
   display: none;
   opacity: 0;
   pointer-events: none;
+  filter: drop-shadow(0 14px 12px rgba(0,0,0,.44));
   transform-origin: 81.5% 8.5%;
   will-change: left, top, transform, opacity;
-  filter: drop-shadow(0 14px 12px rgba(0,0,0,.44));
 }
-#elfoIntroV3.is-pulling .elfo-v11-puller-rig { display: block; }
-.elfo-v11-puller-part {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  pointer-events: none;
-  user-select: none;
-  -webkit-user-drag: none;
-  will-change: transform, opacity;
-}
-.elfo-v11-puller-top {
-  clip-path: inset(0 0 38% 0);
-  transform-origin: 81.5% 8.5%;
-}
-.elfo-v11-puller-mid {
-  clip-path: inset(30% 0 24% 0);
-  transform-origin: 58% 48%;
-}
-.elfo-v11-puller-bottom {
-  clip-path: inset(60% 0 0 0);
-  transform-origin: 52% 67%;
-}
+#elfoIntroV3.is-pulling .elfo-v3-puller { display: block; }
 
 .elfo-v3-hint {
   position: absolute;
@@ -239,36 +212,24 @@ html.elfo-intro-active body { overflow: hidden !important; }
   bottom: 20px;
   transform: translateX(-50%);
   color: rgba(238,240,241,.61);
-  font: 650 11px/1.4 system-ui,sans-serif;
+  font: 650 11px/1.4 system-ui, sans-serif;
   letter-spacing: .025em;
   text-shadow: 0 2px 9px rgba(0,0,0,.82);
   pointer-events: none;
   opacity: 0;
-  animation: elfoV11HintIn .7s 1s ease forwards;
+  animation: elfoV10HintIn .7s 1s ease forwards;
   transition: opacity 220ms ease;
 }
 #elfoIntroV3.is-sequencing .elfo-v3-hint { opacity: 0 !important; }
-@keyframes elfoV11HintIn {
-  from { opacity:0; transform:translate(-50%,7px); }
-  to { opacity:.66; transform:translate(-50%,0); }
+
+@keyframes elfoV10HintIn {
+  from { opacity: 0; transform: translate(-50%,7px); }
+  to   { opacity: .66; transform: translate(-50%,0); }
 }
 
-@media (max-width:700px) {
-  .elfo-v3-character { width:clamp(92px,24vw,122px); }
-  .elfo-v11-puller-rig { width:clamp(140px,38vw,188px); }
-  .elfo-v3-brand { top:15px; left:15px; font-size:8px; }
-  .elfo-v3-hint { bottom:12px; font-size:10px; }
+@media (max-width: 700px) {
+  .elfo-v3-character { width: clamp(92px, 24vw, 122px); }
+  .elfo-v3-puller { width: clamp(140px, 38vw, 188px); }
+  .elfo-v3-brand { top: 15px; left: 15px; font-size: 8px; }
+  .elfo-v3-hint { bottom: 12px; font-size: 10px; }
 }
-
-/* V11.1 black-flash compositor fix */
-.elfo-v3-sheet,
-.elfo-v11-sheet-b {
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
-  transform-style: flat;
-}
-.elfo-v3-frame-window {
-  isolation: isolate;
-  background: transparent !important;
-}
-

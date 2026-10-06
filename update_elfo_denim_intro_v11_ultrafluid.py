@@ -1,4 +1,273 @@
-(() => {
+#!/usr/bin/env python3
+from __future__ import annotations
+import re, shutil, subprocess
+from datetime import datetime
+from pathlib import Path
+
+CSS_CONTENT = r'''/* Royal Jeans — Elfo Denim Intro V11 UltraFluid */
+html.elfo-intro-active,
+html.elfo-intro-active body { overflow: hidden !important; }
+
+#elfoIntroV3 {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483000;
+  overflow: hidden;
+  direction: ltr;
+  user-select: none;
+  touch-action: none;
+  isolation: isolate;
+  --zip-y: 0px;
+  --zip-gap: 0px;
+  background: #06101a;
+}
+#elfoIntroV3[hidden] { display: none !important; }
+
+.elfo-v3-reveal {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at 50% 26%, rgba(255,214,150,.18), transparent 24%),
+    linear-gradient(180deg, #07121d 0%, #091727 48%, #06101a 100%);
+}
+
+.elfo-v3-panel {
+  position: absolute;
+  inset: -2px;
+  z-index: 5;
+  background-image: url('/static/denim-zip-v3.png?v=3');
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  filter: saturate(1.03) contrast(1.035) brightness(.96);
+  will-change: clip-path, transform, filter;
+  transition:
+    transform 1100ms cubic-bezier(.72,.01,.18,1),
+    filter 600ms ease;
+}
+.elfo-v3-panel::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at 50% 4%, rgba(255,255,255,.09), transparent 32%),
+    radial-gradient(ellipse at 50% 108%, rgba(0,0,0,.22), transparent 50%),
+    linear-gradient(115deg, transparent 25%, rgba(255,255,255,.018) 43%, transparent 61%);
+  mix-blend-mode: screen;
+}
+
+.elfo-v3-left  { clip-path: polygon(0 0, 50% 0, 50% 100%, 0 100%); }
+.elfo-v3-right { clip-path: polygon(50% 0, 100% 0, 100% 100%, 50% 100%); }
+
+#elfoIntroV3.is-opening .elfo-v3-left {
+  transform: translate3d(-104%, 0, 0) rotate(-.42deg);
+  filter: brightness(.78) saturate(.98);
+}
+#elfoIntroV3.is-opening .elfo-v3-right {
+  transform: translate3d(104%, 0, 0) rotate(.42deg);
+  filter: brightness(.78) saturate(.98);
+}
+
+.elfo-v3-open-light {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  z-index: 4;
+  width: calc(var(--zip-gap) * 2 + 4px);
+  height: calc(var(--zip-y) + 10px);
+  transform: translateX(-50%);
+  opacity: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(255,224,166,.26), rgba(255,255,255,.09) 38%, rgba(85,168,227,.03));
+  box-shadow:
+    0 0 18px rgba(255,213,135,.18),
+    0 0 50px rgba(82,163,222,.08);
+  transition: opacity 180ms ease;
+}
+#elfoIntroV3.is-pulling .elfo-v3-open-light { opacity: 1; }
+
+.elfo-v3-vignette {
+  position: absolute;
+  inset: 0;
+  z-index: 9;
+  pointer-events: none;
+  box-shadow:
+    inset 0 0 170px rgba(0,4,10,.72),
+    inset 0 -84px 120px rgba(0,0,0,.24);
+  transition: opacity 420ms ease;
+}
+#elfoIntroV3.is-opening .elfo-v3-vignette { opacity: 0; }
+
+.elfo-v3-brand {
+  position: absolute;
+  top: 22px;
+  left: 25px;
+  z-index: 14;
+  color: rgba(232,226,201,.60);
+  font: 800 9px/1.2 system-ui, sans-serif;
+  letter-spacing: .25em;
+  text-shadow: 0 2px 8px rgba(0,0,0,.8);
+  pointer-events: none;
+}
+.elfo-v3-brand::before {
+  content: '';
+  display: inline-block;
+  width: 21px;
+  height: 1px;
+  margin-right: 8px;
+  vertical-align: middle;
+  background: rgba(224,181,91,.58);
+}
+
+.elfo-v3-character {
+  position: absolute;
+  z-index: 30;
+  width: clamp(104px, 9vw, 150px);
+  aspect-ratio: 543 / 724;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  will-change: transform, opacity;
+}
+.elfo-v3-character:focus-visible {
+  outline: 2px solid rgba(235,193,99,.95);
+  outline-offset: 7px;
+  border-radius: 16px;
+}
+.elfo-v3-shadow {
+  position: absolute;
+  z-index: 0;
+  left: 13%;
+  right: 13%;
+  bottom: -1.2%;
+  height: 6.5%;
+  border-radius: 50%;
+  background: rgba(0,0,0,.52);
+  filter: blur(5px);
+  transform-origin: center;
+  will-change: transform, opacity;
+  pointer-events: none;
+}
+.elfo-v3-flip {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  transform: scaleX(var(--elfo-face,1));
+  transform-origin: 50% 88%;
+  will-change: transform;
+}
+.elfo-v3-visual {
+  position: absolute;
+  inset: 0;
+  transform-origin: 50% 92%;
+  will-change: transform, opacity;
+}
+.elfo-v3-frame-window {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  filter: drop-shadow(0 8px 8px rgba(0,0,0,.38));
+  will-change: transform, filter;
+}
+.elfo-v3-sheet,
+.elfo-v11-sheet-b {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 400%;
+  max-width: none !important;
+  height: 100%;
+  object-fit: fill;
+  transform: translate3d(0,0,0);
+  transform-origin: 0 0;
+  will-change: transform, opacity;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
+  image-rendering: auto;
+}
+.elfo-v11-sheet-b { opacity: 0; }
+.elfo-v3-character.is-moving .elfo-v3-frame-window { filter: drop-shadow(0 9px 9px rgba(0,0,0,.42)); }
+.elfo-v3-character.is-running .elfo-v3-frame-window { filter: drop-shadow(0 10px 11px rgba(0,0,0,.46)); }
+
+/* Original puller image remains the source art, but V11 slices it into moving layers. */
+.elfo-v3-puller { display: none !important; }
+.elfo-v11-puller-rig {
+  position: absolute;
+  z-index: 36;
+  width: clamp(150px, 15.4vw, 235px);
+  aspect-ratio: 1 / 1;
+  display: none;
+  opacity: 0;
+  pointer-events: none;
+  transform-origin: 81.5% 8.5%;
+  will-change: left, top, transform, opacity;
+  filter: drop-shadow(0 14px 12px rgba(0,0,0,.44));
+}
+#elfoIntroV3.is-pulling .elfo-v11-puller-rig { display: block; }
+.elfo-v11-puller-part {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
+  will-change: transform, opacity;
+}
+.elfo-v11-puller-top {
+  clip-path: inset(0 0 38% 0);
+  transform-origin: 81.5% 8.5%;
+}
+.elfo-v11-puller-mid {
+  clip-path: inset(30% 0 24% 0);
+  transform-origin: 58% 48%;
+}
+.elfo-v11-puller-bottom {
+  clip-path: inset(60% 0 0 0);
+  transform-origin: 52% 67%;
+}
+
+.elfo-v3-hint {
+  position: absolute;
+  z-index: 16;
+  left: 50%;
+  bottom: 20px;
+  transform: translateX(-50%);
+  color: rgba(238,240,241,.61);
+  font: 650 11px/1.4 system-ui,sans-serif;
+  letter-spacing: .025em;
+  text-shadow: 0 2px 9px rgba(0,0,0,.82);
+  pointer-events: none;
+  opacity: 0;
+  animation: elfoV11HintIn .7s 1s ease forwards;
+  transition: opacity 220ms ease;
+}
+#elfoIntroV3.is-sequencing .elfo-v3-hint { opacity: 0 !important; }
+@keyframes elfoV11HintIn {
+  from { opacity:0; transform:translate(-50%,7px); }
+  to { opacity:.66; transform:translate(-50%,0); }
+}
+
+@media (max-width:700px) {
+  .elfo-v3-character { width:clamp(92px,24vw,122px); }
+  .elfo-v11-puller-rig { width:clamp(140px,38vw,188px); }
+  .elfo-v3-brand { top:15px; left:15px; font-size:8px; }
+  .elfo-v3-hint { bottom:12px; font-size:10px; }
+}
+'''
+
+JS_CONTENT = r'''(() => {
   'use strict';
 
   const root = document.getElementById('elfoIntroV3');
@@ -168,16 +437,8 @@
     sheetA.style.transform=frameTransform(frameA);
     sheetB.style.transform=frameTransform(frameB);
     const b=clamp(blend,0,1);
-
-    // Coverage-preserving crossfade:
-    // one sprite is always fully opaque, so the character can never dim/flash black.
-    if (b <= .5) {
-      sheetA.style.opacity='1';
-      sheetB.style.opacity=String(b * 2);
-    } else {
-      sheetA.style.opacity=String((1 - b) * 2);
-      sheetB.style.opacity='1';
-    }
+    sheetA.style.opacity=String(1-b);
+    sheetB.style.opacity=String(b);
   }
 
   function applyWalkVirtualFrame(index, speed) {
@@ -306,3 +567,57 @@
   addEventListener('resize',()=>{const{w}=actorSize();x=clamp(x,8,innerWidth-w-8);y=groundY();setPos(x,y)});
   requestAnimationFrame(()=>{y=groundY();setSpritePair(0,1,0);setFacing(1);setPos(x,y);requestAnimationFrame(loop)});
 })();
+'''
+
+
+def fail(msg: str, code: int = 1):
+    print(f'ERROR: {msg}')
+    raise SystemExit(code)
+
+
+def main():
+    root = Path.cwd()
+    frontend = root / 'frontend'
+    if not frontend.is_dir():
+        fail('این فایل را باید داخل ریشه پروژه اجرا کنی؛ پوشه frontend پیدا نشد.')
+
+    index_path = frontend / 'index.html'
+    css_path = frontend / 'elfo-intro-v3.css'
+    js_path = frontend / 'elfo-intro-v3.js'
+    for p in (index_path, css_path, js_path):
+        if not p.exists():
+            fail(f'فایل مورد نیاز پیدا نشد: {p}')
+
+    stamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+    backup_dir = root / f'_backup_elfo_intro_v11_{stamp}'
+    backup_dir.mkdir(parents=True, exist_ok=True)
+    for p in (index_path, css_path, js_path):
+        shutil.copy2(p, backup_dir / p.name)
+
+    css_path.write_text(CSS_CONTENT, encoding='utf-8', newline='\n')
+    js_path.write_text(JS_CONTENT, encoding='utf-8', newline='\n')
+
+    index_text = index_path.read_text(encoding='utf-8')
+    new_text = re.sub(r'(/static/elfo-intro-v3\.css\?v=)([^"\']+)', r'\g<1>11', index_text)
+    new_text = re.sub(r'(/static/elfo-intro-v3\.js\?v=)([^"\']+)', r'\g<1>11', new_text)
+    if new_text != index_text:
+        index_path.write_text(new_text, encoding='utf-8', newline='\n')
+    else:
+        print('WARNING: نسخه intro در index.html پیدا نشد؛ فایل‌های CSS/JS جایگزین شدند.')
+
+    try:
+        result = subprocess.run(['node', '--check', str(js_path)], capture_output=True, text=True)
+        if result.returncode != 0:
+            fail('فایل JS جدید خطای syntax دارد:\n' + result.stderr)
+    except FileNotFoundError:
+        print('NOTE: node در این محیط پیدا نشد؛ چک syntax جاوااسکریپت انجام نشد.')
+
+    print('DONE: Elfo Intro V11 UltraFluid applied.')
+    print('Virtual motion states: walk=500, jump=200, zipper=500.')
+    print('The zipper-pulling Elfo is now layered (top/mid/bottom) so it is not a rigid still image.')
+    print(f'Backup: {backup_dir}')
+    print('Only intro CSS/JS and cache version in index.html were changed.')
+
+
+if __name__ == '__main__':
+    main()

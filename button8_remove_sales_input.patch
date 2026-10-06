@@ -1,0 +1,145 @@
+--- a/frontend/index.html
++++ b/frontend/index.html
+@@ -510,11 +510,10 @@
+                 data-title="خواب کالا"
+                 data-endpoint="/upload-sleep-analysis"
+                 data-file-mode="fixed"
+-                data-file-count="4"
++                data-file-count="3"
+                 data-file-one="اکسل سایت"
+                 data-file-two="اکسل محصول"
+-                data-file-three="اکسل فروش"
+-                data-file-four="اکسل تاریخ تعریف"
++                data-file-three="اکسل تاریخ تعریف"
+             >
+                 <span class="tool-number">08</span>
+                 <span
+--- a/backend/api.py
++++ b/backend/api.py
+@@ -401,7 +401,6 @@
+         input_paths[0],
+         input_paths[1],
+         input_paths[2],
+-        input_paths[3],
+         output_path,
+     )
+ 
+@@ -579,7 +578,7 @@
+         report_builder=build_sleep_analysis_report,
+         download_filename="product-sleep-analysis-report.xlsx",
+         allowed_extensions=STANDARD_EXTENSIONS,
+-        expected_count=4,
++        expected_count=3,
+     )
+ 
+ 
+--- a/backend/sleep_analysis_report.py
++++ b/backend/sleep_analysis_report.py
+@@ -468,7 +468,7 @@
+         workbook.close()
+ 
+ 
+-def read_sales_totals(file_path):
++def read_optional_sales_totals(file_path, file_label):
+     workbook = load_workbook(
+         filename=file_path,
+         read_only=True,
+@@ -479,20 +479,25 @@
+     try:
+         headers = get_headers(
+             worksheet,
+-            "اکسل فروش",
++            file_label,
+         )
+-        code_column = find_required_column(
++        code_column_index = find_column_by_aliases(
+             headers,
+             SALES_CODE_ALIASES,
+-            "کد محصول",
+-            "اکسل فروش",
+         )
+-        quantity_column = find_required_column(
++        quantity_column_index = find_column_by_aliases(
+             headers,
+             SALES_QUANTITY_ALIASES,
+-            "مقدار قلم سفارش خرده فروشی",
+-            "اکسل فروش",
+         )
++
++        if (
++            code_column_index is None
++            or quantity_column_index is None
++        ):
++            return None
++
++        code_column = code_column_index + 1
++        quantity_column = quantity_column_index + 1
+         required_column = max(
+             code_column,
+             quantity_column,
+@@ -534,6 +539,29 @@
+         workbook.close()
+ 
+ 
++def read_sales_totals_from_existing_files(
++    site_file_path,
++    product_file_path,
++):
++    for file_path, file_label in (
++        (site_file_path, "اکسل سایت"),
++        (product_file_path, "اکسل محصول"),
++    ):
++        sales_totals = read_optional_sales_totals(
++            file_path,
++            file_label,
++        )
++
++        if sales_totals is not None:
++            return sales_totals
++
++    raise ValueError(
++        "فایل فروش جداگانه حذف شده است؛ برای حفظ منطق خواب کالا، "
++        "ستون «مقدار فروش» یا «مقدار قلم سفارش خرده فروشی» باید "
++        "داخل اکسل سایت یا اکسل محصول وجود داشته باشد."
++    )
++
++
+ def read_definition_dates(file_path):
+     workbook = load_workbook(
+         filename=file_path,
+@@ -911,7 +939,6 @@
+ def create_sleep_analysis_report(
+     site_file_path,
+     product_file_path,
+-    sales_file_path,
+     definition_file_path,
+     output_path,
+ ):
+@@ -924,8 +951,9 @@
+     product_stock = read_product_stock(
+         product_file_path
+     )
+-    sales_totals = read_sales_totals(
+-        sales_file_path
++    sales_totals = read_sales_totals_from_existing_files(
++        site_file_path,
++        product_file_path,
+     )
+     definition_dates = read_definition_dates(
+         definition_file_path
+--- a/_recovery_tools/install_sales_percentage_v6.sh
++++ b/_recovery_tools/install_sales_percentage_v6.sh
+@@ -922,11 +922,10 @@
+         "data-title": "خواب کالا",
+         "data-endpoint": "/upload-sleep-analysis",
+         "data-file-mode": "fixed",
+-        "data-file-count": "4",
++        "data-file-count": "3",
+         "data-file-one": "اکسل سایت",
+         "data-file-two": "اکسل محصول",
+-        "data-file-three": "اکسل فروش",
+-        "data-file-four": "اکسل تاریخ تعریف",
++        "data-file-three": "اکسل تاریخ تعریف",
+     },
+     "خواب کالا",
+     "تحلیل سرعت فروش، موجودی و سن محصول",

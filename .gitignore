@@ -1,0 +1,21 @@
+# Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Generated reports and uploaded Excel files
+backend/uploads/
+backend/output/
+
+# PyInstaller
+build/
+dist/
+
+# Downloaded source packages
+*.zip
+
+# Editors and operating systems
+.DS_Store
+Thumbs.db

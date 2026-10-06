@@ -1,0 +1,284 @@
+html.elfo-intro-active,
+html.elfo-intro-active body {
+  overflow: hidden !important;
+}
+
+#elfoIntroV3 {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483000;
+  overflow: hidden;
+  direction: ltr;
+  user-select: none;
+  touch-action: none;
+  isolation: isolate;
+  --zip-y: 0px;
+  --split: 0px;
+  background:
+    radial-gradient(circle at 50% 22%, rgba(255,255,255,.08), transparent 18%),
+    radial-gradient(circle at 50% 100%, rgba(0,0,0,.28), transparent 45%),
+    linear-gradient(180deg, #12283d 0%, #0f2336 38%, #0a1828 100%);
+}
+#elfoIntroV3[hidden] { display: none !important; }
+
+#elfoIntroV3::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: .16;
+  background:
+    repeating-linear-gradient(90deg, rgba(255,255,255,.05) 0 1px, transparent 1px 10px),
+    repeating-linear-gradient(180deg, rgba(255,255,255,.03) 0 1px, transparent 1px 12px),
+    linear-gradient(135deg, transparent 0 45%, rgba(255,255,255,.06) 49%, transparent 53%, transparent 100%);
+  mix-blend-mode: soft-light;
+}
+
+.elfo-v3-panel {
+  position: absolute;
+  inset: -2px;
+  z-index: 5;
+  background:
+    linear-gradient(90deg, rgba(0,0,0,.18), rgba(255,255,255,.04) 14%, rgba(255,255,255,.02) 50%, rgba(0,0,0,.14) 100%),
+    linear-gradient(180deg, rgba(255,255,255,.04), transparent 18%, transparent 82%, rgba(0,0,0,.18)),
+    repeating-linear-gradient(90deg, rgba(255,255,255,.02) 0 6px, rgba(255,255,255,0) 6px 16px),
+    linear-gradient(180deg, #21415d 0%, #1b3651 48%, #13273e 100%);
+  filter: saturate(1.02) contrast(1.02);
+  will-change: clip-path, transform, filter;
+  transition: transform 1000ms cubic-bezier(.72,.02,.18,.98), filter 500ms ease;
+}
+
+.elfo-v3-panel::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(255,255,255,.12), transparent 40%),
+    radial-gradient(ellipse at 50% 100%, rgba(0,0,0,.22), transparent 52%),
+    linear-gradient(120deg, transparent 0 30%, rgba(255,255,255,.035) 45%, transparent 60%);
+}
+
+.elfo-v3-left::after,
+.elfo-v3-right::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 8px;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(255,255,255,.16), rgba(255,255,255,.03) 34%, rgba(0,0,0,.22) 100%),
+    repeating-linear-gradient(180deg, rgba(242,235,212,.45) 0 3px, transparent 3px 10px);
+  opacity: .82;
+}
+.elfo-v3-left::after { right: calc(50% - 4px); }
+.elfo-v3-right::after { left: calc(50% - 4px); transform: scaleX(-1); }
+
+.elfo-v3-left {
+  clip-path: polygon(0 0, calc(50% - 4px) 0, calc(50% - 4px) 100%, 0 100%);
+}
+.elfo-v3-right {
+  clip-path: polygon(calc(50% + 4px) 0, 100% 0, 100% 100%, calc(50% + 4px) 100%);
+}
+
+#elfoIntroV3.is-opening .elfo-v3-left {
+  transform: translate3d(-104%, 0, 0) rotate(-.8deg);
+  filter: brightness(.82);
+}
+#elfoIntroV3.is-opening .elfo-v3-right {
+  transform: translate3d(104%, 0, 0) rotate(.8deg);
+  filter: brightness(.82);
+}
+
+.elfo-v3-open-light {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: calc(var(--split) * 2 + 8px);
+  height: calc(var(--zip-y) + 10px);
+  transform: translateX(-50%);
+  z-index: 4;
+  pointer-events: none;
+  opacity: 0;
+  background: linear-gradient(180deg, rgba(255,218,150,.18), rgba(255,255,255,.04) 35%, rgba(151,209,255,.04));
+  box-shadow: 0 0 16px rgba(255,210,126,.24), 0 0 54px rgba(93,171,236,.09);
+  transition: opacity 220ms ease;
+}
+#elfoIntroV3.is-pulling .elfo-v3-open-light { opacity: 1; }
+
+.elfo-v3-vignette {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  pointer-events: none;
+  box-shadow: inset 0 0 160px rgba(0,0,0,.42), inset 0 -80px 120px rgba(0,0,0,.24);
+  transition: opacity 400ms ease;
+}
+#elfoIntroV3.is-opening .elfo-v3-vignette { opacity: .18; }
+
+.elfo-v3-brand {
+  position: absolute;
+  top: 24px;
+  left: 26px;
+  z-index: 14;
+  color: rgba(234,230,220,.64);
+  font: 800 10px/1.2 system-ui, sans-serif;
+  letter-spacing: .22em;
+  text-shadow: 0 2px 8px rgba(0,0,0,.55);
+  pointer-events: none;
+}
+.elfo-v3-brand::before {
+  content: '';
+  display: inline-block;
+  width: 22px;
+  height: 1px;
+  margin-right: 8px;
+  vertical-align: middle;
+  background: rgba(220,197,133,.72);
+}
+
+.elfo-v3-character {
+  position: absolute;
+  z-index: 30;
+  width: clamp(108px, 10vw, 150px);
+  aspect-ratio: 3 / 4;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  will-change: transform, opacity;
+}
+.elfo-v3-character:focus-visible {
+  outline: 2px solid rgba(240,206,118,.95);
+  outline-offset: 6px;
+  border-radius: 18px;
+}
+.elfo-v3-shadow {
+  position: absolute;
+  left: 14%;
+  right: 14%;
+  bottom: 0;
+  height: 9%;
+  border-radius: 50%;
+  background: rgba(0,0,0,.42);
+  filter: blur(7px);
+  transform-origin: center;
+  pointer-events: none;
+  z-index: 0;
+  will-change: transform, opacity;
+}
+.elfo-v3-flip {
+  position: absolute;
+  inset: 0;
+  transform: scaleX(var(--elfo-face, 1));
+  transform-origin: 50% 85%;
+  will-change: transform;
+}
+.elfo-v3-visual {
+  position: absolute;
+  inset: 0;
+  transform-origin: 50% 92%;
+  will-change: transform;
+}
+.elfo-v3-frame-window,
+.elfo-v3-sheet,
+.elfo-v3-puller {
+  display: none !important;
+}
+
+.elfo-v4-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  overflow: visible;
+  filter: drop-shadow(0 10px 12px rgba(0,0,0,.28));
+}
+.elfo-v4-svg [data-part] {
+  transform-box: fill-box;
+  transform-origin: center center;
+  will-change: transform;
+}
+.elfo-v4-svg .leg,
+.elfo-v4-svg .arm {
+  transform-origin: center top;
+}
+.elfo-v4-svg .body {
+  transform-origin: center center;
+}
+.elfo-v4-svg .head {
+  transform-origin: center bottom;
+}
+
+.elfo-v4-slider {
+  position: absolute;
+  width: 42px;
+  height: 74px;
+  left: calc(50% - 21px);
+  top: 0;
+  z-index: 40;
+  opacity: 0;
+  pointer-events: none;
+  border-radius: 22px 22px 24px 24px;
+  background:
+    linear-gradient(180deg, #e7ebef 0%, #c8d0d7 30%, #8e98a1 64%, #67717b 100%);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.72), inset 0 -2px 8px rgba(0,0,0,.18), 0 10px 18px rgba(0,0,0,.28);
+  transform-origin: 50% 10%;
+  will-change: transform, top, left, opacity;
+}
+.elfo-v4-slider::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 9px;
+  width: 16px;
+  height: 24px;
+  transform: translateX(-50%);
+  border-radius: 10px;
+  background: linear-gradient(180deg, #f8fafb, #bfc7ce 60%, #8d969f);
+  box-shadow: inset 0 0 0 4px rgba(95,104,114,.78), inset 0 2px 0 rgba(255,255,255,.68);
+}
+.elfo-v4-slider::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -10px;
+  width: 12px;
+  height: 18px;
+  transform: translateX(-50%);
+  border-radius: 0 0 8px 8px;
+  background: linear-gradient(180deg, #d4dbe1, #89939d);
+  box-shadow: 0 4px 8px rgba(0,0,0,.18);
+}
+
+.elfo-v3-hint {
+  position: absolute;
+  left: 50%;
+  bottom: 20px;
+  transform: translateX(-50%);
+  z-index: 16;
+  color: rgba(239,242,245,.66);
+  font: 650 11px/1.4 system-ui, sans-serif;
+  letter-spacing: .02em;
+  text-shadow: 0 2px 10px rgba(0,0,0,.8);
+  pointer-events: none;
+  opacity: 0;
+  animation: elfoHintIn .7s 1s ease forwards;
+  transition: opacity 220ms ease;
+}
+#elfoIntroV3.is-sequencing .elfo-v3-hint { opacity: 0 !important; }
+
+@keyframes elfoHintIn {
+  from { opacity: 0; transform: translate(-50%, 8px); }
+  to { opacity: .66; transform: translate(-50%, 0); }
+}
+
+@media (max-width: 700px) {
+  .elfo-v3-character { width: clamp(94px, 24vw, 122px); }
+  .elfo-v3-brand { top: 15px; left: 15px; font-size: 8px; }
+  .elfo-v3-hint { bottom: 12px; font-size: 10px; }
+}

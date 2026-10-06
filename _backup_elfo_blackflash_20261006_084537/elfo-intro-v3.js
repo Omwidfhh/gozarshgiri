@@ -168,16 +168,8 @@
     sheetA.style.transform=frameTransform(frameA);
     sheetB.style.transform=frameTransform(frameB);
     const b=clamp(blend,0,1);
-
-    // Coverage-preserving crossfade:
-    // one sprite is always fully opaque, so the character can never dim/flash black.
-    if (b <= .5) {
-      sheetA.style.opacity='1';
-      sheetB.style.opacity=String(b * 2);
-    } else {
-      sheetA.style.opacity=String((1 - b) * 2);
-      sheetB.style.opacity='1';
-    }
+    sheetA.style.opacity=String(1-b);
+    sheetB.style.opacity=String(b);
   }
 
   function applyWalkVirtualFrame(index, speed) {

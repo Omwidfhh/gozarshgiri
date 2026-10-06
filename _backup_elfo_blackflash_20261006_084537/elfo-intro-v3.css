@@ -259,16 +259,3 @@ html.elfo-intro-active body { overflow: hidden !important; }
   .elfo-v3-brand { top:15px; left:15px; font-size:8px; }
   .elfo-v3-hint { bottom:12px; font-size:10px; }
 }
-
-/* V11.1 black-flash compositor fix */
-.elfo-v3-sheet,
-.elfo-v11-sheet-b {
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
-  transform-style: flat;
-}
-.elfo-v3-frame-window {
-  isolation: isolate;
-  background: transparent !important;
-}
-

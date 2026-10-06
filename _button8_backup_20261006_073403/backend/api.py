@@ -404,6 +404,7 @@ def build_sleep_analysis_report(
         output_path,
     )
 
+
 def safe_custom_download_filename(report_name):
     safe_name = re.sub(
         r"[^\w\u0600-\u06ff-]+",
